@@ -1,68 +1,39 @@
-# fram-assignment
+# Credit Risk Modeling & Loan Default Prediction
 
-This repository contains the code for the FIN F414 - Financial Risk Analytics & Management assignment.
+## Project Overview
+This project builds an end-to-end machine learning pipeline to predict institutional loan defaults based on borrower profiles. It addresses the critical challenge of the **Accuracy Paradox** in highly imbalanced financial datasets by shifting the evaluation focus from raw accuracy to precision, recall, and F1-scores.
 
-## Setup
+## Tech Stack
+* **Language:** Python
+* **Data Processing:** Pandas, NumPy, Scipy (`spearmanr`)
+* **Visualization:** Matplotlib, Seaborn
+* **Machine Learning:** Scikit-Learn, XGBoost, Imbalanced-Learn (SMOTE)
 
-This project uses [astral uv](https://github.com/astral-sh/uv) for dependency management.
+## Pipeline & Methodology
 
-1. **Install uv**:
-   If you haven't installed `uv` yet, you can do so by following the instructions in their documentation.
+### 1. Exploratory Data Analysis (EDA) & Preprocessing
+* Visualized numerical distributions using Kernel Density Estimates (KDE) and categorical frequencies via bar charts.
+* Applied **One-Hot Encoding** (`drop_first=True`) to categorical variables to prevent multicollinearity (the dummy variable trap).
 
-2. **Install Dependencies**:
-   Run the following command to sync the project dependencies:
+### 2. Feature Selection
+* Conducted correlation analysis using a **Spearman Rank Correlation Matrix** to identify monotonic relationships and filter out redundant features or low-variance noise.
 
+### 3. Handling Class Imbalance
+The dataset exhibited a severe **84:16 class imbalance**, where models naturally favored predicting the majority class (No Default) to artificially inflate accuracy. This was mitigated using:
+* **Algorithmic Weighting:** Utilizing `class_weight='balanced'` for Random Forest and `scale_pos_weight` for XGBoost to heavily penalize false negatives.
+* **SMOTE (Synthetic Minority Over-sampling Technique):** Artificially balancing the training data prior to model fitting.
+
+### 4. Modeling & Evaluation
+Trained and evaluated three distinct classifier architectures:
+* **Logistic Regression** (Baseline)
+* **Random Forest Classifier**
+* **XGBoost Classifier** (Champion Model)
+
+**Evaluation Shift:** Because 84% baseline accuracy could be achieved by predicting '0' every time, models were evaluated strictly on their ability to detect the minority class using **Recall**, **Precision**, and the **F1-Score**. 
+
+## Installation and Usage
+
+1. Clone this repository:
    ```bash
-   uv sync
-   ```
-
-3. **Run the Project**:
-   The project consists of a series of Jupyter notebooks that should be executed sequentially.
-
-## Project Structure & Workflow
-
-The analysis is divided into the following steps, represented by individual notebooks:
-
-### 1. `preprocessing.ipynb`
-
-* **Purpose**: Prepares the raw data for analysis.
-* **Process**:
-  * Reads the raw Excel file (`data/GR_20.xlsx`).
-  * Extracts relevant datasets: Set, Ratings, Amount, LGD (Loss Given Default), and EAD (Exposure at Default).
-  * Cleans and formats the data, renaming columns to "Year 1" to "Year 10".
-  * Saves the processed datasets as individual CSV files in the `data/` directory for easy access in subsequent steps.
-
-### 2. `analysis.ipynb`
-
-* **Purpose**: Performs Exploratory Data Analysis (EDA) on the portfolio.
-* **Process**:
-  * Loads the processed CSV files.
-  * Visualizes the evolution of the portfolio's credit quality over time.
-  * Generates plots (e.g., stacked area charts) to show the distribution of credit ratings across different years.
-
-### 3. `transition_matrix.ipynb`
-
-* **Purpose**: Calculates the probability of credit rating migration.
-* **Process**:
-  * Computes the transition matrices for each year-over-year period (e.g., Year 1 to Year 2).
-  * Determines the probability of a borrower moving from one rating category to another (including Default).
-  * Calculates the average transition matrix to observe long-term trends.
-  * Saves the yearly transition matrices to the `results/` directory.
-
-### 4. `expected_loss.ipynb`
-
-* **Purpose**: Estimates the Expected Loss (EL) for the portfolio.
-* **Process**:
-  * **Probability of Default (PD)**: Derives PDs from the calculated transition matrices (specifically the probability of transitioning to 'D').
-  * **Exposure at Default (EAD)**: Calculates EAD by multiplying the loan Amount by the EAD multiplier.
-  * **Expected Loss Calculation**: Computes EL using the standard formula:
-    $$EL = PD \times LGD \times EAD$$
-  * Saves the calculated Probability of Default and Expected Loss to `results/`.
-
-### 5. `stress_testing.ipynb`
-
-* **Purpose**: Evaluates the portfolio's resilience under adverse scenarios.
-* **Process**:
-  * **Scenario 1 (LGD Stress)**: Applies stress multipliers to the LGD values to simulate a severe economic downturn where recovery rates drop. Recalculates Expected Loss under these conditions.
-  * **Scenario 2 (Rating Downgrade)**: Simulates a systemic credit quality deterioration by downgrading ratings (e.g., AAA -> A, A -> BBB). Recalculates Expected Loss based on the stressed ratings.
-  * Compares the stressed Expected Loss against the baseline.
+   git clone [https://github.com/NV-2005/Loan_default_prediction.git](https://github.com/NV-2005/Loan_default_prediction.git)
+   cd Loan_default_prediction
