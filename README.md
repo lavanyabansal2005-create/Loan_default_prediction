@@ -31,9 +31,3 @@ Trained and evaluated three distinct classifier architectures:
 
 **Evaluation Shift:** Because 84% baseline accuracy could be achieved by predicting '0' every time, models were evaluated strictly on their ability to detect the minority class using **Recall**, **Precision**, and the **F1-Score**. 
 
-## Installation and Usage
-
-1. Clone this repository:
-   ```bash
-   git clone [https://github.com/NV-2005/Loan_default_prediction.git](https://github.com/NV-2005/Loan_default_prediction.git)
-   cd Loan_default_prediction
